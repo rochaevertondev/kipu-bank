@@ -12,6 +12,7 @@ contract KipuBank {
     uint256 private countWithdrawals;
 
     mapping(address => uint256) private _balances;
+    address[] private _accounts;
 
     error NotOwnerBank(address caller);
     error NotAccountOwner(address caller);
@@ -31,6 +32,9 @@ contract KipuBank {
         }
         if (KipuBankBalance + msg.value > MaxBankCap) {
             revert MaxBankCapReached(MaxBankCap - KipuBankBalance);
+        }
+        if (_balances[msg.sender] == 0) {
+            _accounts.push(msg.sender);
         }
         _balances[msg.sender] += msg.value;
         KipuBankBalance += msg.value;
@@ -56,6 +60,18 @@ contract KipuBank {
     function currentBalance() external view onlyOwnerBank returns (uint256 current) {
         return KipuBankBalance;
     }
+
+    function allBalances() private view returns (address[] memory, uint256[] memory) {
+        uint256[] memory balances = new uint256[](_accounts.length);
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            balances[i] = _balances[_accounts[i]];
+        }
+        return (_accounts, balances);
+    }
+
+    function currentBalances() external view onlyOwnerBank returns (address[] memory, uint256[] memory) {
+    return allBalances();
+}
 
     function getDeposits() external view onlyOwnerBank returns (uint256 current) {
         return countDeposits;

@@ -12,6 +12,8 @@ contract KipuBank {
 
     mapping(address => uint256) private _balances;
     
+    error NotOwnerBank(address caller);
+    
     constructor(uint256 _MaxBankCap, uint256 _LimitMaxPerWithdraw) {
         MaxBankCap = _MaxBankCap;
         LimitMaxPerWithdraw = _LimitMaxPerWithdraw;
@@ -29,10 +31,17 @@ contract KipuBank {
         KipuBankBalance -= msg.value;
     }
 
-    function currentBalance() external view returns (uint256 current) {
-        return KipuBankBalance;
+    modifier onlyOwnerBank(){
+        if (msg.sender != ownerBank){
+            revert NotOwnerBank(msg.sender);
+        }
+        _;
     }
 
+    function currentBalance() external view onlyOwnerBank returns (uint256 current) {
+        return KipuBankBalance;
+    }
+    
     function getBalance(address account) external view  returns (uint256) {
         return _balances[account];
     }

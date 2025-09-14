@@ -17,7 +17,8 @@ contract KipuBank {
     error NotAccountOwner(address caller);
     error InvalidValue(uint256 value);
     error MaxBankCapReached(uint256 value);
-
+    error insufficientBalance(uint256 value);
+    
     constructor(uint256 _MaxBankCap, uint256 _LimitMaxPerWithdraw) {
         MaxBankCap = _MaxBankCap;
         LimitMaxPerWithdraw = _LimitMaxPerWithdraw;
@@ -37,9 +38,12 @@ contract KipuBank {
     }
 
     function withdraw() external payable {
+        if (msg.value <= 0 || msg.value > _balances[msg.sender]) {
+            revert insufficientBalance(_balances[msg.sender]);
+        }
         _balances[msg.sender] -= msg.value;
         KipuBankBalance -= msg.value;
-        countWithdrawals++;
+        countWithdrawals ++;
     }
 
     modifier onlyOwnerBank() {
@@ -49,30 +53,15 @@ contract KipuBank {
         _;
     }
 
-    function currentBalance()
-        external
-        view
-        onlyOwnerBank
-        returns (uint256 current)
-    {
+    function currentBalance() external view onlyOwnerBank returns (uint256 current) {
         return KipuBankBalance;
     }
 
-    function getDeposits()
-        external
-        view
-        onlyOwnerBank
-        returns (uint256 current)
-    {
+    function getDeposits() external view onlyOwnerBank returns (uint256 current) {
         return countDeposits;
     }
 
-    function getWithdrawals()
-        external
-        view
-        onlyOwnerBank
-        returns (uint256 current)
-    {
+    function getWithdrawals() external view onlyOwnerBank returns (uint256 current) {
         return countWithdrawals;
     }
 

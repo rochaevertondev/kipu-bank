@@ -18,7 +18,7 @@ contract KipuBank {
     error InvalidValue(uint256 value);
     error MaxBankCapReached(uint256 value);
     error insufficientBalance(uint256 value);
-    
+
     constructor(uint256 _MaxBankCap, uint256 _LimitMaxPerWithdraw) {
         MaxBankCap = _MaxBankCap;
         LimitMaxPerWithdraw = _LimitMaxPerWithdraw;
@@ -27,14 +27,14 @@ contract KipuBank {
 
     function deposit() external payable {
         if (msg.value <= 0 || msg.value > LimitMaxPerWithdraw) {
-            revert InvalidValue(msg.value);
+            revert InvalidValue(LimitMaxPerWithdraw);
         }
         if (KipuBankBalance + msg.value > MaxBankCap) {
-            revert MaxBankCapReached(msg.value);
+            revert MaxBankCapReached(MaxBankCap - KipuBankBalance);
         }
         _balances[msg.sender] += msg.value;
         KipuBankBalance += msg.value;
-        countDeposits++;
+        countDeposits ++;
     }
 
     function withdraw() external payable {

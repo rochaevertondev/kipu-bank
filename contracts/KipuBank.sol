@@ -9,6 +9,8 @@ contract KipuBank {
     address private immutable ownerBank;
     
     uint256 private KipuBankBalance;
+    uint256 private countDeposits;
+    uint256 private countWithdrawals;
 
     mapping(address => uint256) private _balances;
     
@@ -41,6 +43,14 @@ contract KipuBank {
 
     function currentBalance() external view onlyOwnerBank returns (uint256 current) {
         return KipuBankBalance;
+    }
+
+    function getDeposits() external view onlyOwnerBank returns (uint256 current) {
+        return countDeposits;
+    }
+
+    function getWithdrawals() external view onlyOwnerBank returns (uint256 current) {
+        return countWithdrawals;
     }
 
     modifier onlyAccountOwner(address account){

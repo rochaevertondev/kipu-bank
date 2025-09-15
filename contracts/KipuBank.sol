@@ -20,6 +20,9 @@ contract KipuBank {
     error MaxBankCapReached(uint256 value);
     error insufficientBalance(uint256 value);
 
+    /// @notice Emitted when a user makes a successful deposit
+    event SuccessfulDeposit(address indexed account, uint256 amount);
+
     constructor(uint256 _MaxBankCap, uint256 _LimitMaxPerWithdraw) {
         MaxBankCap = _MaxBankCap;
         LimitMaxPerWithdraw = _LimitMaxPerWithdraw;
@@ -39,6 +42,8 @@ contract KipuBank {
         _balances[msg.sender] += msg.value;
         KipuBankBalance += msg.value;
         countDeposits ++;
+
+        emit SuccessfulDeposit(msg.sender, msg.value);
     }
 
     function withdraw() external payable {

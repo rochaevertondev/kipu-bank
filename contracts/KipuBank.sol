@@ -18,10 +18,14 @@ contract KipuBank {
     error NotAccountOwner(address caller);
     error InvalidValue(uint256 value);
     error MaxBankCapReached(uint256 value);
-    error insufficientBalance(uint256 value);
+    error InsufficientBalance(uint256 value);
+    error TransferFailed();
 
     /// @notice Emitted when a user makes a successful deposit
     event SuccessfulDeposit(address indexed account, uint256 amount);
+
+    /// @notice Emitted when a user makes a successful withdrawal
+    event SuccessfulWithdrawal(address indexed account, uint256 amount);
 
     constructor(uint256 _MaxBankCap, uint256 _LimitMaxPerWithdraw) {
         MaxBankCap = _MaxBankCap;
@@ -46,13 +50,20 @@ contract KipuBank {
         emit SuccessfulDeposit(msg.sender, msg.value);
     }
 
-    function withdraw() external payable {
-        if (msg.value <= 0 || msg.value > _balances[msg.sender]) {
-            revert insufficientBalance(_balances[msg.sender]);
+    function withdraw(uint256 amount) external payable {
+        if (amount <= 0 || amount > _balances[msg.sender]) {
+            revert InsufficientBalance(_balances[msg.sender]);
         }
-        _balances[msg.sender] -= msg.value;
-        KipuBankBalance -= msg.value;
+        _balances[msg.sender] -= amount;
+        KipuBankBalance -= amount;
         countWithdrawals ++;
+        
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            revert TransferFailed();
+        }
+
+        emit SuccessfulWithdrawal(msg.sender, amount);
     }
 
     modifier onlyOwnerBank() {

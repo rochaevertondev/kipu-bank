@@ -1,4 +1,4 @@
-# KipuBank Smart Contract ! <img src="./images/icons_bank.png" alt="Bank Icon" width="50" />
+# <img src="./images/icons_bank.png" alt="Bank Icon" width="50" /> KipuBank Smart Contract ! <img src="./images/icons_bank.png" alt="Bank Icon" width="50" />
 
 ## Description
 
